@@ -4,27 +4,13 @@ const notesOutput = document.getElementById('notesOutput')
 const notesForm = document.getElementById('notesForm')
 
 
-function myNotes() {  //done lines 37-48
-    fetch(url)
-        .then((res) => res.json())
-        .then((data) => {
-        // take all the todos
-      // loop through and create a new todo item on the page for each one
-        for (let noteObj of data) {
-            renderNoteItem(noteObj)
-        }
-        })
-}
-
-
-
-notesForm.addEventListener('submit', function () { //done lines 8-14
-    event.preventDefault()
-    // grab the value from the input
-    const noteText = document.querySelector('#note-text').value
-    // send it to the server to create a new todo
-    createNote(noteText)
-})
+// notesForm.addEventListener('submit', function (event) { //done lines 8-14
+//     event.preventDefault()
+//     // grab the value from the input
+//     const noteText = document.querySelector('#note-text').value
+//     // send it to the server to create a new todo
+//     createNote(noteText)
+// })
 
 
 
@@ -44,7 +30,17 @@ notesOutput.addEventListener('click', function (event) {  //done 18-32
     }
 })
 
-
+function myNotes() {  //done lines 37-48
+    fetch(url)
+        .then((res) => res.json())
+        .then((data) => {
+        // take all the todos
+      // loop through and create a new todo item on the page for each one
+        for (let noteObj of data) {
+            renderNoteItem(noteObj)
+        }
+        })
+}
 
 function deleteNote(element) {  //51-59
     const noteId = element.parentElement.id
@@ -79,48 +75,51 @@ function updateNote(element) {  //62-81
 }
 
 
-
-
-function createNote(noteText) {  //done lines 84-106
-    fetch(url, {
+notesForm.addEventListener('submit', function (event) {  //done lines 84-106
+    event.preventDefault()
+        const noteTitle = document.querySelector('#noteTitle').value 
+        const noteBody = document.querySelector('#noteBody').value
+        fetch(url, {
         method: 'POST',
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
-        item: noteText,
-        created_at: moment().format(),
+            title: noteTitle,
+            body: noteBody,
+        
+            // created_at: moment().format(),
     }),
 })
-    .then(r => r.json())
+    .then((r) => r.json())
     .then((data) => {
-           // what I get back from the server IS the newly created todo object that looks like this:
-    /*
-    {
-        "item": "Another thing!",
-        "id": 5
-    }
-    */
-      // So I can take that data and create a new todo item in th
+
         renderNoteItem(data)
     })
     clearInputs()
-}
+})
 
 
-function renderNoteItem(noteObj) { //112-128
-    const itemEl = document.createElement('li')
-    itemEl.p = noteObj.id
-    rendernoteText(itemEl, noteObj)
-    notesOutput.prepent(itemEl)
+function renderNoteItem(noteObj) {
+    const noteCard = document.createElement('span')
+    noteCard.id = noteObj.id
+    noteCard.innerHTML = `
+    <h2>${noteObj.title}</h2><p>${noteObj.body}</p>
+    <span class="delete">delete</span><span class='edit'>edit text</span>
+    `
+    notesOutput.appendChild(noteCard)
 }
+
+// function renderNoteItem(noteObj) { //112-128
+//     const itemEl = document.createElement('li')
+//     itemEl.p = noteObj.id
+//     rendernoteText(itemEl, noteObj)
+//     notesOutput.prepent(itemEl)
+// }
 
 
 
 function rendernoteText(notesOutputItem, noteObj) {
     notesOutputItem.innerHTML = `class=${noteObj.item} class='delete' class='edit'`
 }
-
-
-
 
 
 
@@ -149,10 +148,8 @@ function hideEditControls(noteItem) {  //148-159
 }
 
 function clearInputs(){
-    form.reset ()
+    notesForm.reset ()
 }
 
 
-// call this when the script first runs (on page load)
-// This runs only on the first load!
 myNotes();
