@@ -54,14 +54,16 @@ function deleteNote(element) {  //51-59
 
 
 function updateNote(element) {  //62-81
-    const note = element.parentElement.id
-    const noteText = document.querySelector('.edit-text')
+    const noteTitle = document.querySelector('#noteTitle').value 
+    const noteBody = document.querySelector('#noteBody').value
     fetch(`http://localhost:3000/notes/${noteId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            item: noteText.value,
-            updated_at: moment().format(),
+            title: noteTitle,
+            body: noteBody,
+            
+            // updated_at: moment().format(),
         }),
     })
     .then(function (res) {
@@ -85,8 +87,7 @@ notesForm.addEventListener('submit', function (event) {  //done lines 84-106
         body: JSON.stringify({
             title: noteTitle,
             body: noteBody,
-        
-            // created_at: moment().format(),
+            created_at: moment().format('MMMM Do YY'),
     }),
 })
     .then((r) => r.json())
@@ -103,19 +104,12 @@ function renderNoteItem(noteObj) {
     noteCard.id = noteObj.id
     noteCard.innerHTML = `
     <h2>${noteObj.title}</h2><p>${noteObj.body}</p>
-    <span class="delete">delete</span><span class='edit'>edit text</span>
+    <span class="material-icons-outlined delete">
+Delete
+</span> <span class='edit'>edit</span>
     `
     notesOutput.appendChild(noteCard)
 }
-
-// function renderNoteItem(noteObj) { //112-128
-//     const itemEl = document.createElement('li')
-//     itemEl.p = noteObj.id
-//     rendernoteText(itemEl, noteObj)
-//     notesOutput.prepent(itemEl)
-// }
-
-
 
 function rendernoteText(notesOutputItem, noteObj) {
     notesOutputItem.innerHTML = `class=${noteObj.item} class='delete' class='edit'`
